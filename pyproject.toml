@@ -1,0 +1,27 @@
+[project]
+name = "claimstream"
+version = "1.0.0"
+description = "Real-time insurance claims intelligence: streaming ingestion, fraud scoring, lakehouse and forecasting"
+readme = "README.md"
+license = { text = "MIT" }
+authors = [{ name = "Aman Jain", email = "jamanbuilds@gmail.com" }]
+requires-python = ">=3.11"
+keywords = ["streaming", "fraud-detection", "insurance", "pyspark", "fastapi", "mlops"]
+classifiers = [
+  "Programming Language :: Python :: 3",
+  "License :: OSI Approved :: MIT License",
+  "Topic :: Scientific/Engineering :: Artificial Intelligence",
+]
+
+[project.urls]
+Repository = "https://github.com/Aman23000/claimstream"
+Issues = "https://github.com/Aman23000/claimstream/issues"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+markers = ["integration: needs running Redis/Postgres/API"]
+filterwarnings = ["ignore::DeprecationWarning", "ignore::UserWarning", "ignore::FutureWarning"]
+
+[tool.ruff]
+line-length = 120
+target-version = "py311"
