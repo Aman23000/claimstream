@@ -1,0 +1,30 @@
+name: Bug report
+description: Something isn't working
+labels: [bug]
+body:
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      description: What did you expect, and what happened instead?
+    validations: { required: true }
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. make pipeline
+        2. make up
+        3. ...
+    validations: { required: true }
+  - type: textarea
+    id: logs
+    attributes:
+      label: Relevant logs
+      description: Paste from `.run/*.log` or the terminal.
+      render: shell
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: macOS 15 / Python 3.12 / Java 21 / local or docker

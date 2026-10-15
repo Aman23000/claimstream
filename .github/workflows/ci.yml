@@ -1,0 +1,61 @@
+name: CI
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  python:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env: { POSTGRES_HOST_AUTH_METHOD: trust, POSTGRES_DB: claimstream }
+        ports: ["5432:5432"]
+        options: --health-cmd pg_isready --health-interval 5s --health-retries 10
+      redis:
+        image: redis:7
+        ports: ["6379:6379"]
+        options: --health-cmd "redis-cli ping" --health-interval 5s --health-retries 10
+    env:
+      PG_DSN: postgresql://postgres@localhost:5432/claimstream
+      REDIS_URL: redis://localhost:6379/0
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.12", cache: pip }
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: "21" }
+      - name: Install dependencies (CPU-only torch)
+        run: |
+          pip install torch --index-url https://download.pytorch.org/whl/cpu
+          pip install -r requirements.txt
+      - name: Lint
+        run: ruff check claimstream dashboard tests scripts --select E,F,W --ignore E501
+      - name: Unit tests
+        run: pytest -q -m "not integration"
+      - name: Build + test rules service
+        working-directory: rules-service
+        run: |
+          javac -d out src/main/java/com/claimstream/rules/*.java src/test/java/com/claimstream/rules/*.java
+          java -cp out com.claimstream.rules.RulesEngineTest
+          jar --create --file rules-service.jar --main-class com.claimstream.rules.RulesServer -C out .
+          nohup java -jar rules-service.jar > rules.log 2>&1 &
+      - name: End-to-end pipeline (data -> DB -> model -> Spark -> forecast)
+        run: |
+          python -m claimstream.ingest.download
+          python -m claimstream.ingest.bootstrap
+          python -m claimstream.ml.train_fraud
+          python -m claimstream.batch.spark_daily
+          python -m claimstream.ml.train_forecast
+      - name: Integration tests
+        run: pytest -q -m integration
+
+  docker:
+    runs-on: ubuntu-latest
+    needs: python
+    steps:
+      - uses: actions/checkout@v4
+      - run: docker compose config --quiet
+      - run: docker build -f docker/app.Dockerfile -t claimstream-app .
+      - run: docker build -t claimstream-rules rules-service
