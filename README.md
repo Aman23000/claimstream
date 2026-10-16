@@ -70,7 +70,7 @@ flowchart LR
 | Analytics SQL | Constraints, indexes, views with window functions | PostgreSQL 16 |
 | DevOps | Multi-stage Docker, compose with Kafka (KRaft), CI, Airflow DAGs | Docker, GitHub Actions, Airflow |
 
-More detail: [docs/architecture.md](docs/architecture.md) · [docs/api.md](docs/api.md)
+📚 **Full documentation:** [docs/](docs/README.md): getting started · architecture · API · model cards · runbook · testing · ADRs
 
 ## Results
 
@@ -126,7 +126,7 @@ make pipeline             # download → load DB → fraud model → Spark → f
 make up                   # rules · processor · API · producer · dashboard
 ```
 
-**macOS, one command:** `bash scripts/setup_mac.sh --start`
+**macOS, one command:** `bash scripts/setup_mac.sh --start` · step-by-step guide: [docs/getting-started.md](docs/getting-started.md)
 
 Configuration is entirely through environment variables. See [`.env.example`](.env.example).
 
@@ -157,6 +157,8 @@ CI runs lint, unit tests and the Java build, then runs the **full data → model
 against real Postgres and Redis service containers before the integration tests.
 
 ## Design decisions
+Model cards: [fraud](docs/model-cards/fraud-model.md) · [forecast](docs/model-cards/forecast-model.md)
+
 - [ADR 0001](docs/adr/0001-event-bus-abstraction.md): one event-bus interface over Redis Streams and Kafka
 - [ADR 0002](docs/adr/0002-rules-plus-ml.md): a transparent rules engine alongside the ML model
 - [ADR 0003](docs/adr/0003-out-of-time-validation.md): out-of-time validation instead of random splits

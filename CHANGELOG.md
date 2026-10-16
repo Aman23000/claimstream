@@ -3,6 +3,13 @@
 All notable changes to this project are documented here. Format: [Keep a Changelog](https://keepachangelog.com/en/1.1.0/);
 versioning: [SemVer](https://semver.org/).
 
+## [1.1.0] - 2026-10-16
+### Added
+- Documentation portal (`docs/README.md`): getting-started guide, operations runbook, testing guide
+- Model cards for the fraud scorer and the volume forecaster
+- Component READMEs for `claimstream/`, `rules-service/`, `dashboard/` and `sql/`
+- `make help` (now the default target)
+
 ## [1.0.0] - 2026-10-14
 ### Added
 - Versioned claim event contract with validation and a dead-letter queue
